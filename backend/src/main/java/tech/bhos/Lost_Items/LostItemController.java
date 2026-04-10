@@ -1,5 +1,7 @@
 package tech.bhos.Lost_Items;
 
+import jakarta.validation.Valid;
+import tech.bhos.Lost_Items.dto.LostItemRequest;
 import tech.bhos.Lost_Items.model.LostItem;
 import tech.bhos.Lost_Items.service.LostItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/lost-items")
-@CrossOrigin(origins = "http://localhost:3000")
 public class LostItemController {
 
     @Autowired
@@ -28,12 +29,12 @@ public class LostItemController {
     }
 
     @PostMapping
-    public LostItem create(@RequestBody LostItem item) {
+    public LostItem create(@Valid @RequestBody LostItemRequest item) {
         return service.addLostItem(item);
     }
 
     @PutMapping("/{id}")
-    public LostItem update(@PathVariable Integer id, @RequestBody LostItem item) {
+    public LostItem update(@PathVariable Integer id, @Valid @RequestBody LostItemRequest item) {
         return service.updateLostItem(id, item);
     }
 
