@@ -11,15 +11,10 @@ import {
 } from "@mui/material";
 import { Save, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { motion } from "framer-motion";
-
-interface LostItemForm {
-  itemName: string;
-  itemDesc: string;
-  itemLocation: string;
-  founderNumber: string;
-}
+import { lostItemsApi } from "../api/lostItemsApi";
+import type { LostItemForm } from "../types/lostItem";
+import { isValidPhoneNumber } from "../utils/phoneValidation";
 
 const Create = () => {
   const navigate = useNavigate();
@@ -34,22 +29,12 @@ const Create = () => {
     founderNumber: "",
   });
 
-  // Base URL for your Java backend API
-  const API_BASE_URL = "http://localhost:8080/api/lost-items";
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
-
-  // Phone number validation
-  const isValidPhone = (phone: string) => {
-    const phoneRegex =
-      /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
-    return phoneRegex.test(phone);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,7 +52,7 @@ const Create = () => {
     }
 
     // Validate phone number
-    if (!isValidPhone(formData.founderNumber)) {
+    if (!isValidPhoneNumber(formData.founderNumber)) {
       setError("Please enter a valid phone number");
       return;
     }
@@ -76,10 +61,7 @@ const Create = () => {
       setLoading(true);
       setError(null);
 
-      // POST request to create new lost item
-      const response = await axios.post(API_BASE_URL, formData);
-
-      console.log("Lost item created:", response.data);
+      await lostItemsApi.create(formData);
       setSuccess(true);
 
       // Redirect to all posts after 1.5 seconds

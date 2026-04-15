@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Container,
@@ -12,15 +12,10 @@ import {
 } from "@mui/material";
 import { Save, Trash2 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
 import { motion } from "framer-motion";
-
-interface LostItemForm {
-  itemName: string;
-  itemDesc: string;
-  itemLocation: string;
-  founderNumber: string;
-}
+import { lostItemsApi } from "../api/lostItemsApi";
+import type { LostItemForm } from "../types/lostItem";
+import { isValidPhoneNumber } from "../utils/phoneValidation";
 
 const Edit = () => {
   const navigate = useNavigate();
@@ -39,9 +34,6 @@ const Edit = () => {
     founderNumber: "",
   });
 
-  // Base URL for your Java backend API
-  const API_BASE_URL = "http://localhost:8080/api/lost-items";
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -49,29 +41,18 @@ const Edit = () => {
       [name]: value,
     }));
   };
-
-  // Phone number validation
-  const isValidPhone = (phone: string) => {
-    const phoneRegex =
-      /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
-    return phoneRegex.test(phone);
-  };
-  useEffect(() => {
+  // Fetch the lost item by ID
+  const fetchLostItem = useCallback(async () => {
     if (!itemId) {
       setError("No item ID provided");
       setLoading(false);
       return;
     }
-    fetchLostItem();
-  }, [itemId]);
 
-  // Fetch the lost item by ID
-  const fetchLostItem = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(`${API_BASE_URL}/${itemId}`);
-      const item = response.data;
+      const item = await lostItemsApi.getById(itemId);
 
       setFormData({
         itemName: item.itemName,
@@ -87,9 +68,18 @@ const Edit = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [itemId]);
+
+  useEffect(() => {
+    fetchLostItem();
+  }, [fetchLostItem]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!itemId) {
+      setError("No item ID provided");
+      return;
+    }
 
     // Validation
     if (
@@ -103,7 +93,7 @@ const Edit = () => {
     }
 
     // Validate phone number
-    if (!isValidPhone(formData.founderNumber)) {
+    if (!isValidPhoneNumber(formData.founderNumber)) {
       setError("Please enter a valid phone number");
       return;
     }
@@ -112,10 +102,7 @@ const Edit = () => {
       setSaving(true);
       setError(null);
 
-      // PUT request to update the lost item
-      const response = await axios.put(`${API_BASE_URL}/${itemId}`, formData);
-
-      console.log("Lost item updated:", response.data);
+      await lostItemsApi.update(itemId, formData);
       setSuccess(true);
 
       // Redirect to all posts after 1.5 seconds
@@ -133,6 +120,11 @@ const Edit = () => {
   };
 
   const handleDelete = async () => {
+    if (!itemId) {
+      setError("No item ID provided");
+      return;
+    }
+
     if (
       !window.confirm("Are you sure you want to delete this lost item report?")
     ) {
@@ -143,10 +135,7 @@ const Edit = () => {
       setSaving(true);
       setError(null);
 
-      // DELETE request to remove the lost item
-      await axios.delete(`${API_BASE_URL}/${itemId}`);
-
-      console.log("Lost item deleted");
+      await lostItemsApi.remove(itemId);
       setSuccess(true);
 
       // Redirect to all posts after 1 second

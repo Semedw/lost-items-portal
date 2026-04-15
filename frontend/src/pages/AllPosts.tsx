@@ -10,26 +10,15 @@ import {
 } from "@mui/material";
 import { Edit, AlertTriangle, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { motion } from "framer-motion";
-
-// Define the LostItem interface
-interface LostItem {
-  itemId: number;
-  itemName: string;
-  itemDesc: string;
-  itemLocation: string;
-  founderNumber: string;
-}
+import { lostItemsApi } from "../api/lostItemsApi";
+import type { LostItem } from "../types/lostItem";
 
 const AllPosts = () => {
   const [lostItems, setLostItems] = useState<LostItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-
-  // Base URL for your Java backend API
-  const API_BASE_URL = "http://localhost:8080/api/lost-items";
 
   useEffect(() => {
     fetchLostItems();
@@ -40,8 +29,8 @@ const AllPosts = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get(API_BASE_URL);
-      setLostItems(response.data);
+      const data = await lostItemsApi.getAll();
+      setLostItems(data);
     } catch (err) {
       setError(
         "Failed to load lost items. Please check your backend connection.",
