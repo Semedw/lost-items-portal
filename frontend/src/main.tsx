@@ -11,6 +11,7 @@ import Create from "./pages/Create";
 import Edit from "./pages/Edit";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ItemDetails from "./pages/ItemDetails";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root")!).render(
         >
           <Routes>
             <Route path="/" element={<AllPosts />} />
+            <Route path="/items/:id" element={<ItemDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route element={<ProtectedRoute />}>

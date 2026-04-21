@@ -7,13 +7,16 @@ import {
   Button,
   CircularProgress,
   Alert,
+  Chip,
+  Stack,
 } from "@mui/material";
-import { Edit, AlertTriangle, MapPin } from "lucide-react";
+import { Edit, AlertTriangle, MapPin, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { lostItemsApi } from "../api/lostItemsApi";
 import { useAuth } from "../hooks/useAuth";
 import type { LostItem } from "../types/lostItem";
+import { LOST_ITEM_STATUS_LABELS } from "../types/lostItemStatus";
 
 const AllPosts = () => {
   const [lostItems, setLostItems] = useState<LostItem[]>([]);
@@ -45,6 +48,10 @@ const AllPosts = () => {
 
   const handleEdit = (itemId: number) => {
     navigate(`/edit?id=${itemId}`);
+  };
+
+  const handleViewDetails = (itemId: number) => {
+    navigate(`/items/${itemId}`);
   };
 
   if (loading) {
@@ -127,15 +134,30 @@ const AllPosts = () => {
                   <Typography variant="h6" component="h2">
                     {item.itemName}
                   </Typography>
-                  <Button
-                    size="small"
-                    startIcon={<Edit size={16} />}
-                    onClick={() => handleEdit(item.itemId)}
-                    disabled={user?.userId !== item.createdByUserId}
-                  >
-                    Edit
-                  </Button>
+                  <Stack direction="row" spacing={1}>
+                    <Button
+                      size="small"
+                      startIcon={<Eye size={16} />}
+                      onClick={() => handleViewDetails(item.itemId)}
+                    >
+                      Details
+                    </Button>
+                    <Button
+                      size="small"
+                      startIcon={<Edit size={16} />}
+                      onClick={() => handleEdit(item.itemId)}
+                      disabled={user?.userId !== item.createdByUserId}
+                    >
+                      Edit
+                    </Button>
+                  </Stack>
                 </Box>
+                <Chip
+                  size="small"
+                  label={LOST_ITEM_STATUS_LABELS[item.status]}
+                  color={item.status === "CLAIMED" ? "success" : "default"}
+                  sx={{ mb: 2 }}
+                />
 
                 <Typography
                   variant="body2"

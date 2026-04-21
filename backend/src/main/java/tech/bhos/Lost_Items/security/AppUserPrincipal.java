@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import tech.bhos.Lost_Items.model.AppUser;
+import tech.bhos.Lost_Items.model.UserRole;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,8 +24,22 @@ public class AppUserPrincipal implements UserDetails {
         return user.getEmail();
     }
 
+    public UserRole role() {
+        return user.effectiveRole();
+    }
+
+    public boolean isAdmin() {
+        return role() == UserRole.ADMIN;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (isAdmin()) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_USER"),
+                    new SimpleGrantedAuthority("ROLE_ADMIN")
+            );
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 

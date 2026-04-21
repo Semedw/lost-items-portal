@@ -1,6 +1,7 @@
 export interface User {
   userId: number;
   email: string;
+  role: "USER" | "ADMIN";
 }
 
 export interface AuthResponse {
@@ -9,6 +10,7 @@ export interface AuthResponse {
   expiresIn: number;
   userId: number;
   email: string;
+  role: "USER" | "ADMIN";
 }
 
 export interface LoginPayload {

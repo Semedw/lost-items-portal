@@ -21,4 +21,19 @@ public class AppUser {
 
     @Column(nullable = false)
     private String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'USER'")
+    private UserRole role;
+
+    @PrePersist
+    public void ensureDefaults() {
+        if (role == null) {
+            role = UserRole.USER;
+        }
+    }
+
+    public UserRole effectiveRole() {
+        return role == null ? UserRole.USER : role;
+    }
 }

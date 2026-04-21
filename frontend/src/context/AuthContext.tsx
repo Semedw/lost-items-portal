@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser({
           userId: response.userId,
           email: response.email,
+          role: response.role,
         });
       } catch {
         setAccessToken(null);
@@ -40,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser({
       userId: response.userId,
       email: response.email,
+      role: response.role,
     });
   };
 
@@ -49,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser({
       userId: response.userId,
       email: response.email,
+      role: response.role,
     });
   };
 

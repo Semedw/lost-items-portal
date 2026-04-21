@@ -27,8 +27,7 @@ class AuthIntegrationTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private LostItemRepo lostItemRepo;

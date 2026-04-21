@@ -13,6 +13,9 @@ A full-stack lost-item reporting portal with:
 - Create a new report (authenticated)
 - Edit an existing report (owner-only)
 - Delete a report (owner-only)
+- Track report status (`Still Looking`, `Found`, `Claimed`)
+- View item details with status activity log
+- Update status as item owner or admin
 
 ## Project structure
 
@@ -113,7 +116,15 @@ sh ./mvnw test
 | --- | --- |
 | `GET /api/lost-items` | Public |
 | `GET /api/lost-items/{id}` | Public |
+| `GET /api/lost-items/{id}/details` | Public |
 | `POST /api/lost-items` | Authenticated |
 | `PUT /api/lost-items/{id}` | Authenticated + owner only |
 | `DELETE /api/lost-items/{id}` | Authenticated + owner only |
+| `PATCH /api/lost-items/{id}/status` | Authenticated + owner or admin |
 | `/api/auth/*` | Public (except `/api/auth/me` requires auth) |
+
+### Lost item status
+
+- Status values: `STILL_LOOKING`, `FOUND`, `CLAIMED`
+- New reports default to `STILL_LOOKING` if status is omitted
+- Status changes are recorded and returned in `GET /api/lost-items/{id}/details`

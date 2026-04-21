@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import tech.bhos.Lost_Items.dto.LostItemRequest;
 import tech.bhos.Lost_Items.exception.LostItemNotFoundException;
 import tech.bhos.Lost_Items.model.LostItem;
+import tech.bhos.Lost_Items.model.LostItemStatus;
 import tech.bhos.Lost_Items.repository.LostItemRepo;
 import tech.bhos.Lost_Items.service.LostItemService;
 
@@ -62,7 +63,8 @@ class SpringBootRestApplicationTests {
                 "Laptop",
                 "Silver 13-inch laptop",
                 "Engineering building",
-                "bad-phone"
+                "bad-phone",
+                LostItemStatus.STILL_LOOKING
         );
         Set<ConstraintViolation<LostItemRequest>> violations = validator.validate(payload);
 
@@ -85,7 +87,8 @@ class SpringBootRestApplicationTests {
                 "Laptop",
                 "Silver 13-inch laptop",
                 "Engineering building",
-                "+12025550123"
+                "+12025550123",
+                LostItemStatus.STILL_LOOKING
         );
     }
 

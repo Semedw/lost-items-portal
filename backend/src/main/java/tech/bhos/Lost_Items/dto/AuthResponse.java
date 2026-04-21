@@ -5,6 +5,7 @@ public record AuthResponse(
         String tokenType,
         long expiresIn,
         Long userId,
-        String email
+        String email,
+        String role
 ) {
 }

@@ -14,6 +14,7 @@ import tech.bhos.Lost_Items.dto.RegisterRequest;
 import tech.bhos.Lost_Items.dto.UserResponse;
 import tech.bhos.Lost_Items.model.AppUser;
 import tech.bhos.Lost_Items.model.RefreshToken;
+import tech.bhos.Lost_Items.model.UserRole;
 import tech.bhos.Lost_Items.repository.AppUserRepository;
 import tech.bhos.Lost_Items.repository.RefreshTokenRepository;
 import tech.bhos.Lost_Items.security.AppUserPrincipal;
@@ -65,7 +66,8 @@ public class AuthService {
         AppUser user = appUserRepository.save(new AppUser(
                 null,
                 normalizedEmail,
-                passwordEncoder.encode(request.password())
+                passwordEncoder.encode(request.password()),
+                UserRole.USER
         ));
         return issueSession(user, headers);
     }
@@ -115,7 +117,7 @@ public class AuthService {
     }
 
     public UserResponse currentUser(AppUserPrincipal principal) {
-        return new UserResponse(principal.userId(), principal.email());
+        return new UserResponse(principal.userId(), principal.email(), principal.role().name());
     }
 
     private AuthResponse issueSession(AppUser user, HttpHeaders headers) {
@@ -135,7 +137,8 @@ public class AuthService {
                 "Bearer",
                 jwtService.accessTokenExpirationSeconds(),
                 user.getUserId(),
-                user.getEmail()
+                user.getEmail(),
+                user.effectiveRole().name()
         );
     }
 
